@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Helena Poppi 🖤</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Lora:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Lora', serif;
+            background-color: #1a1a1a; /* Um preto um pouco mais suave */
+        }
+        .font-cinzel {
+            font-family: 'Cinzel Decorative', cursive;
+        }
+        /* Efeito de transição para o conteúdo */
+        #frase-poetica, #conteudo-principal {
+            transition: opacity 2s ease-in-out;
+        }
+        .background-slide {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            /* Filtro para deixar as fotos com um tom mais escuro */
+            filter: grayscale(50%) brightness(0.7);
+            transition: opacity 2s ease-in-out;
+        }
+        .overlay {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.8) 100%);
+        }
+        @keyframes pulse-dark {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+            }
+            50% {
+                transform: scale(1.03);
+                box-shadow: 0 0 25px rgba(138, 43, 226, 0.5);
+            }
+        }
+        .animate-pulse-dark {
+            animation: pulse-dark 3s infinite;
+        }
+    </style>
+</head>
+<body class="text-gray-200">
+    
+    <!-- Tela de Início -->
+    <div id="tela-inicio" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black p-4">
+        <h2 class="font-cinzel text-4xl md:text-6xl text-gray-200 mb-4 tracking-widest">Para Helena</h2>
+        <p class="text-xl text-purple-300 mb-8 tracking-wider">Um Poema Visual</p>
+        <button id="start-button" class="border-2 border-purple-400 text-purple-300 font-bold py-3 px-8 rounded-sm shadow-lg cursor-not-allowed opacity-50 tracking-widest">
+            Aguarde...
+        </button>
+    </div>
+
+    <!-- Slideshow de Fundo -->
+    <div id="background-bottom" class="background-slide z-0 opacity-0"><div class="overlay"></div></div>
+    <div id="background-top" class="background-slide z-10 opacity-0"><div class="overlay"></div></div>
+
+    <!-- Conteúdo Principal -->
+    <div id="conteudo-principal" class="relative z-20 flex flex-col items-center justify-center min-h-screen p-4 text-center opacity-0">
+        <h1 class="font-cinzel text-5xl md:text-7xl text-gray-100 drop-shadow-lg mb-4 tracking-wider">
+            Helena Poppi
+        </h1>
+        <p class="text-lg md:text-xl text-gray-300 drop-shadow-md mb-8 max-w-2xl italic">
+            "No meu universo de sombras, você é a única lua."
+        </p>
+        <div class="h-20">
+            <p id="frase-poetica" class="text-2xl md:text-3xl text-purple-200 drop-shadow-lg opacity-0 italic"></p>
+        </div>
+    </div>
+
+    <!-- Player de áudio. O atributo 'loop' foi removido para controlarmos a playlist manualmente. -->
+    <audio id="homenagem-audio"></audio>
+
+    <script>
+        const telaInicio = document.getElementById('tela-inicio');
+        const startButton = document.getElementById('start-button');
+        const audioPlayer = document.getElementById('homenagem-audio');
+        const conteudoPrincipal = document.getElementById('conteudo-principal');
+        const bgTop = document.getElementById('background-top');
+        const bgBottom = document.getElementById('background-bottom');
+        const fraseElemento = document.getElementById('frase-poetica');
+
+        const slideImages = [
+            "https://i.postimg.cc/rmDbsS2g/IMG-20241030-WA0089.jpg", "https://i.postimg.cc/W4WCs5Ch/IMG-20250613-WA0001.jpg", "https://i.postimg.cc/fW0phjKR/IMG-20250613-WA0002.jpg", "https://i.postimg.cc/hPWw4zyb/IMG-20250613-WA0003.jpg", "https://i.postimg.cc/Fsy6Yrwt/IMG-20250613-WA0004.jpg", "https://i.postimg.cc/vZGNfRd4/IMG-20250613-WA0005.jpg", "https://i.postimg.cc/kgwhyjnf/IMG-20250613-WA0006.jpg", "https://i.postimg.cc/ZqRssrnZ/IMG-20250613-WA0007.jpg", "https://i.postimg.cc/1zjCkfVF/IMG-20250613-WA0008.jpg", "https://i.postimg.cc/MHksGNDK/IMG-20250613-WA0009.jpg", "https://i.postimg.cc/yxFL3jQh/IMG-20250613-WA0010.jpg", "https://i.postimg.cc/zBHt88Tc/IMG-20250613-WA0011.jpg", "https://i.postimg.cc/wxJfrxqt/IMG-20250613-WA0012.jpg", "https://i.postimg.cc/WbvWcRz5/IMG-20250613-WA0013.jpg", "https://i.postimg.cc/hP1CSC7c/IMG-20250613-WA0014.jpg", "https://i.postimg.cc/6p6MTddR/IMG-20250613-WA0015.jpg", "https://i.postimg.cc/fRHBdJKP/IMG-20250613-WA0016.jpg", "https://i.postimg.cc/rpKgNMZw/IMG-20250613-WA0017.jpg", "https://i.postimg.cc/1z2BW2bc/IMG-20250613-WA0018.jpg", "https://i.postimg.cc/85vHxwS8/IMG-20250613-WA0019.jpg", "https://i.postimg.cc/Y21R3XRY/IMG-20250613-WA0020.jpg", "https://i.postimg.cc/zv1jNWzy/IMG-20250613-WA0021.jpg", "https://i.postimg.cc/MHbYpTHd/IMG-20250613-WA0022.jpg", "https://i.postimg.cc/fTCK4J6b/IMG-20250613-WA0023.jpg", "https://i.postimg.cc/pXRZ1Dc7/IMG-20250613-WA0024.jpg", "https://i.postimg.cc/W147ssvw/IMG-20250613-WA0025.jpg", "https://i.postimg.cc/K8sDzCcS/IMG-20250613-WA0026.jpg", "https://i.postimg.cc/VNrBb45S/IMG-20250613-WA0027.jpg", "https://i.postimg.cc/zfswwWRx/IMG-20250613-WA0028.jpg", "https://i.postimg.cc/V6XqK6qm/IMG-20250613-WA0029.jpg", "https://i.postimg.cc/Y0k1ZHRg/IMG-20250613-WA0030.jpg", "https://i.postimg.cc/cCmQNbkz/IMG-20250613-WA0031.jpg", "https://i.postimg.cc/fWj7XVWv/IMG-20250613-WA0032.jpg", "https://i.postimg.cc/jdxHhRLY/IMG-20250613-WA0033.jpg", "https://i.postimg.cc/FsTjWwLd/IMG-20250613-WA0034.jpg", "https://i.postimg.cc/bwM18bLq/IMG-20250613-WA0035.jpg", "https://i.postimg.cc/4xnprw68/IMG-20250613-WA0036.jpg", "https://i.postimg.cc/ZqdpqRDp/IMG-20250613-WA0037.jpg", "https://i.postimg.cc/1t0FpdSz/IMG-20250613-WA0038.jpg", "https://i.postimg.cc/L5H1vV43/IMG-20250613-WA0039.jpg", "https://i.postimg.cc/T1CWsWpM/IMG-20250613-WA0040.jpg", "https://i.postimg.cc/C1pDngWt/IMG-20250613-WA0041.jpg", "https://i.postimg.cc/J7qJ0SK6/IMG-20250613-WA0042.jpg", "https://i.postimg.cc/8PX6BW2L/IMG-20250613-WA0043.jpg", "https://i.postimg.cc/pXLjFk62/IMG-20250613-WA0044.jpg", "https://i.postimg.cc/0N2hgTtT/IMG-20250613-WA0045.jpg", "https://i.postimg.cc/nr7PYpzD/IMG-20250613-WA0046.jpg", "https://i.postimg.cc/sXbLhvVz/IMG-20250613-WA0047.jpg"
+        ];
+        
+        const frases = [ "Nosso amor é um poema escrito em noites de tempestade.", "Para Helena, minha eterna musa da noite.", "Seu olhar é um abismo no qual eu adoro me perder.", "Juntos, somos a mais bela melancolia.", "Que a nossa eternidade comece em cada crepúsculo.", "Você é o feitiço que eu nunca quis quebrar.", "Em cada verso sombrio, encontro a luz do seu rosto." ];
+        
+        let currentImageIndex = 0;
+        let indexFrase = 0;
+
+        // --- MÚSICA - LÓGICA DA PLAYLIST ---
+        const musicPlaylist = [
+            "https://LennonBC.github.io/TEAMOHELENAPOPPI/Still%20Loving%20You.mp3",
+            "https://LennonBC.github.io/TEAMOHELENAPOPPI/Endless%20Love.mp3"
+        ];
+        let currentTrackIndex = 0;
+
+        // Carrega a primeira música da lista
+        audioPlayer.src = musicPlaylist[currentTrackIndex];
+        audioPlayer.load();
+        
+        // Espera a primeira música estar pronta para tocar
+        const musicReady = new Promise(resolve => {
+            if (audioPlayer.src) {
+                audioPlayer.addEventListener('canplaythrough', resolve, { once: true });
+            } else {
+                resolve();
+            }
+        });
+
+        musicReady.then(() => {
+            startButton.textContent = "Entrar";
+            startButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            startButton.classList.add('animate-pulse-dark', 'cursor-pointer');
+            startButton.addEventListener('click', iniciarHomenagem, { once: true });
+        });
+        
+        // Função para tocar a próxima música quando a atual terminar
+        audioPlayer.addEventListener('ended', function() {
+            // Avança para a próxima faixa
+            currentTrackIndex = (currentTrackIndex + 1) % musicPlaylist.length;
+            // Define a nova fonte e toca
+            audioPlayer.src = musicPlaylist[currentTrackIndex];
+            audioPlayer.play();
+        });
+
+        function iniciarHomenagem() {
+            telaInicio.style.display = 'none';
+            conteudoPrincipal.style.opacity = '1';
+            if (audioPlayer.src) {
+                audioPlayer.volume = 0.5;
+                audioPlayer.play();
+            }
+            startSlideshow();
+            setTimeout(() => {
+                mostrarProximaFrase();
+                setInterval(mostrarProximaFrase, 7000);
+            }, 1500);
+        }
+
+        function startSlideshow() {
+            if (slideImages.length === 0) return;
+            bgTop.style.backgroundImage = `url('${slideImages[0]}')`;
+            bgBottom.style.backgroundImage = `url('${slideImages[0]}')`;
+            bgTop.style.opacity = '1';
+            bgBottom.style.opacity = '1';
+            if (slideImages.length > 1) {
+                setInterval(changeSlide, 6000);
+            }
+        }
+
+        function changeSlide() {
+            currentImageIndex = (currentImageIndex + 1) % slideImages.length;
+            const nextImageUrl = slideImages[currentImageIndex];
+            bgBottom.style.backgroundImage = `url('${nextImageUrl}')`;
+            bgTop.style.opacity = '0';
+            setTimeout(() => {
+                bgTop.style.backgroundImage = `url('${nextImageUrl}')`;
+                bgTop.style.opacity = '1';
+            }, 2000);
+        }
+
+        function mostrarProximaFrase() {
+            fraseElemento.style.opacity = '0';
+            setTimeout(() => {
+                fraseElemento.innerText = frases[indexFrase];
+                fraseElemento.style.opacity = '1';
+                indexFrase = (indexFrase + 1) % frases.length;
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
